@@ -77,7 +77,6 @@ public class CreateCustomerUseCaseTest {
 
         //then
         assertEquals(expectedErrorMessage, actualException.getMessage());
-
     }
 
     @Test
@@ -107,6 +106,5 @@ public class CreateCustomerUseCaseTest {
 
         //then
         assertEquals(expectedErrorMessage, actualException.getMessage());
-
     }
 }

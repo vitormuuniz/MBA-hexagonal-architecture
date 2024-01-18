@@ -17,33 +17,53 @@ class GetCustomerByIdUseCaseTest {
 
     @Test
     @DisplayName("Deve obter um cliente por id")
-    public void testGet() {
+    public void testGetById() {
         //given
-        final var expectedId = UUID.randomUUID().getMostSignificantBits();
+        final var expectedID = UUID.randomUUID().getMostSignificantBits();
         final var expectedCpf = "12345678901";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
         final var aCustomer = new Customer();
-        aCustomer.setId(expectedId);
+        aCustomer.setId(expectedID);
         aCustomer.setCpf(expectedCpf);
         aCustomer.setEmail(expectedEmail);
         aCustomer.setName(expectedName);
 
-        final var input = new GetCustomerByIdUseCase.Input(expectedId);
+        final var input = new GetCustomerByIdUseCase.Input(expectedID);
 
         //when
         final var customerService = mock(CustomerService.class);
-        when(customerService.findById(expectedId)).thenReturn(Optional.of(aCustomer));
+        when(customerService.findById(expectedID)).thenReturn(Optional.of(aCustomer));
+
+        final var useCase = new GetCustomerByIdUseCase(customerService);
+
+        //then
+        final var output = useCase.execute(input).get();
+
+        assertEquals(expectedID, output.id());
+        assertEquals(expectedCpf, output.cpf());
+        assertEquals(expectedEmail, output.email());
+        assertEquals(expectedName, output.name());
+    }
+
+    @Test
+    @DisplayName("Deve obter vazio ao tentar recuperar um cliente não existente por id")
+    public void testGetByIdWithInvalidID() {
+        //given
+        final var expectedID = UUID.randomUUID().getMostSignificantBits();
+
+        final var input = new GetCustomerByIdUseCase.Input(expectedID);
+
+        //when
+        final var customerService = mock(CustomerService.class);
+        when(customerService.findById(expectedID)).thenReturn(Optional.empty());
 
         final var useCase = new GetCustomerByIdUseCase(customerService);
 
         //then
         final var output = useCase.execute(input);
 
-        assertEquals(expectedId, output.id());
-        assertEquals(expectedCpf, output.cpf());
-        assertEquals(expectedEmail, output.email());
-        assertEquals(expectedName, output.name());
+        assertTrue(output.isEmpty());
     }
 }

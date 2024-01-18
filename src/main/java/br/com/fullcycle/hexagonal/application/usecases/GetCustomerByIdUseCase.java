@@ -4,9 +4,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import br.com.fullcycle.hexagonal.application.UseCase;
-import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 import br.com.fullcycle.hexagonal.services.CustomerService;
 
+//Port
 public class GetCustomerByIdUseCase extends UseCase<GetCustomerByIdUseCase.Input, Optional<GetCustomerByIdUseCase.Output>> {
 
     private final CustomerService customerService;
@@ -17,12 +17,8 @@ public class GetCustomerByIdUseCase extends UseCase<GetCustomerByIdUseCase.Input
 
     @Override
     public Optional<Output> execute(Input input) {
-        var customer = customerService.findById(input.id);
-        if (customer.isEmpty()) {
-            return new ValidationException("Customer not found");
-        }
-
-        return Optional.of(new Output(customer.get().getId(), customer.get().getCpf(), customer.get().getEmail(), customer.get().getName()));
+        return customerService.findById(input.id)
+                .map(customer -> new Output(customer.getId(), customer.getCpf(), customer.getEmail(), customer.getName()));
     }
 
     public record Input(Long id) {}
