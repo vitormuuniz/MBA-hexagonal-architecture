@@ -1,6 +1,7 @@
 package br.com.fullcycle.hexagonal.application.usecases;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -9,7 +10,6 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -44,10 +44,10 @@ public class CreateCustomerUseCaseTest {
         final var output = useCase.execute(createInput);
 
         //then
-        Assertions.assertNotNull(output.id());
-        Assertions.assertEquals(expectedCpf, output.cpf());
-        Assertions.assertEquals(expectedEmail, output.email());
-        Assertions.assertEquals(expectedName, output.name());
+        assertNotNull(output.id());
+        assertEquals(expectedCpf, output.cpf());
+        assertEquals(expectedEmail, output.email());
+        assertEquals(expectedName, output.name());
     }
 
     @Test
