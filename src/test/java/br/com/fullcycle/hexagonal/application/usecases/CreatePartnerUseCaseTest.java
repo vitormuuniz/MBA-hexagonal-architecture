@@ -21,15 +21,15 @@ class CreatePartnerUseCaseTest {
     @DisplayName("Deve criar um parceiro")
     public void testCreatePartner() {
         //given
-        final var expectedCnpj = "12345678901";
+        final var expectedCNPJ = "41536538000100";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
-        var createInput = new CreatePartnerUseCase.Input(expectedCnpj, expectedEmail, expectedName);
+        var createInput = new CreatePartnerUseCase.Input(expectedCNPJ, expectedEmail, expectedName);
 
         //when
         final var partnerService = mock(PartnerService.class);
-        when(partnerService.findByCnpj(expectedCnpj)).thenReturn(Optional.empty());
+        when(partnerService.findByCnpj(expectedCNPJ)).thenReturn(Optional.empty());
         when(partnerService.findByEmail(expectedEmail)).thenReturn(Optional.empty());
         when(partnerService.save(any())).thenAnswer(invocation -> {
             var partner = invocation.getArgument(0, Partner.class);
@@ -43,31 +43,31 @@ class CreatePartnerUseCaseTest {
 
         //then
         assertNotNull(output.id());
-        assertEquals(expectedCnpj, output.cnpj());
+        assertEquals(expectedCNPJ, output.cnpj());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
     }
 
     @Test
-    @DisplayName("Não deve cadastrar um parceiro com Cnpj duplicado")
-    public void testCreateWithDuplicatedCnpjShouldFail() {
+    @DisplayName("Não deve cadastrar um parceiro com CNPJ duplicado")
+    public void testCreateWithDuplicatedCNPJShouldFail() {
         //given
-        final var expectedCnpj = "12345678901";
+        final var expectedCNPJ = "41536538000100";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Partner already exists";
 
-        var createInput = new CreatePartnerUseCase.Input(expectedCnpj, expectedEmail, expectedName);
+        var createInput = new CreatePartnerUseCase.Input(expectedCNPJ, expectedEmail, expectedName);
 
         final var aPartner = new Partner();
         aPartner.setId(UUID.randomUUID().getMostSignificantBits());
-        aPartner.setCnpj(expectedCnpj);
+        aPartner.setCnpj(expectedCNPJ);
         aPartner.setEmail(expectedEmail);
         aPartner.setName(expectedName);
 
         //when
         final var partnerService = mock(PartnerService.class);
-        when(partnerService.findByCnpj(expectedCnpj)).thenReturn(Optional.of(aPartner));
+        when(partnerService.findByCnpj(expectedCNPJ)).thenReturn(Optional.of(aPartner));
 
         final var useCase = new CreatePartnerUseCase(partnerService);
 
@@ -81,16 +81,16 @@ class CreatePartnerUseCaseTest {
     @DisplayName("Não deve cadastrar um parceiro com Email duplicado")
     public void testCreateWithDuplicatedEmailShouldFail() {
         //given
-        final var expectedCnpj = "12345678901";
+        final var expectedCNPJ = "41536538000100";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Partner already exists";
 
-        var createInput = new CreatePartnerUseCase.Input(expectedCnpj, expectedEmail, expectedName);
+        var createInput = new CreatePartnerUseCase.Input(expectedCNPJ, expectedEmail, expectedName);
 
         final var aPartner = new Partner();
         aPartner.setId(UUID.randomUUID().getMostSignificantBits());
-        aPartner.setCnpj(expectedCnpj);
+        aPartner.setCnpj(expectedCNPJ);
         aPartner.setEmail(expectedEmail);
         aPartner.setName(expectedName);
 

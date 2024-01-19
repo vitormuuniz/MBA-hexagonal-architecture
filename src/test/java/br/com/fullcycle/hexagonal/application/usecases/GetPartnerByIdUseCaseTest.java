@@ -20,13 +20,13 @@ class GetPartnerByIdUseCaseTest {
     public void testGetById() {
         //given
         final var expectedID = UUID.randomUUID().getMostSignificantBits();
-        final var expectedCnpj = "12345678901";
+        final var expectedCNPJ = "41536538000100";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
         final var aPartner = new Partner();
         aPartner.setId(expectedID);
-        aPartner.setCnpj(expectedCnpj);
+        aPartner.setCnpj(expectedCNPJ);
         aPartner.setEmail(expectedEmail);
         aPartner.setName(expectedName);
 
@@ -42,7 +42,7 @@ class GetPartnerByIdUseCaseTest {
         final var output = useCase.execute(input).get();
 
         assertEquals(expectedID, output.id());
-        assertEquals(expectedCnpj, output.cnpj());
+        assertEquals(expectedCNPJ, output.cnpj());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
     }

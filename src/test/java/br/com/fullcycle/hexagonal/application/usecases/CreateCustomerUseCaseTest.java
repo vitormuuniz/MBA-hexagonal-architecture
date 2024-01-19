@@ -23,15 +23,15 @@ public class CreateCustomerUseCaseTest {
     @DisplayName("Deve criar um cliente")
     public void testCreateCustomer() {
         //given
-        final var expectedCpf = "12345678901";
+        final var expectedCPF = "12345678901";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
-        var createInput = new CreateCustomerUseCase.Input(expectedCpf, expectedEmail, expectedName);
+        var createInput = new CreateCustomerUseCase.Input(expectedCPF, expectedEmail, expectedName);
 
         //when
         final var customerService = mock(CustomerService.class);
-        when(customerService.findByCpf(expectedCpf)).thenReturn(Optional.empty());
+        when(customerService.findByCpf(expectedCPF)).thenReturn(Optional.empty());
         when(customerService.findByEmail(expectedEmail)).thenReturn(Optional.empty());
         when(customerService.save(any())).thenAnswer(invocation -> {
             var customer = invocation.getArgument(0, Customer.class);
@@ -45,7 +45,7 @@ public class CreateCustomerUseCaseTest {
 
         //then
         assertNotNull(output.id());
-        assertEquals(expectedCpf, output.cpf());
+        assertEquals(expectedCPF, output.cpf());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
     }
@@ -54,22 +54,22 @@ public class CreateCustomerUseCaseTest {
     @DisplayName("Não deve cadastrar um cliente com CPF duplicado")
     public void testCreateWithDuplicatedCPFShouldFail() {
         //given
-        final var expectedCpf = "12345678901";
+        final var expectedCPF = "12345678901";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Customer already exists";
 
-        var createInput = new CreateCustomerUseCase.Input(expectedCpf, expectedEmail, expectedName);
+        var createInput = new CreateCustomerUseCase.Input(expectedCPF, expectedEmail, expectedName);
 
         final var aCustomer = new Customer();
         aCustomer.setId(UUID.randomUUID().getMostSignificantBits());
-        aCustomer.setCpf(expectedCpf);
+        aCustomer.setCpf(expectedCPF);
         aCustomer.setEmail(expectedEmail);
         aCustomer.setName(expectedName);
 
         //when
         final var customerService = mock(CustomerService.class);
-        when(customerService.findByCpf(expectedCpf)).thenReturn(Optional.of(aCustomer));
+        when(customerService.findByCpf(expectedCPF)).thenReturn(Optional.of(aCustomer));
 
         final var useCase = new CreateCustomerUseCase(customerService);
 
@@ -83,16 +83,16 @@ public class CreateCustomerUseCaseTest {
     @DisplayName("Não deve cadastrar um cliente com Email duplicado")
     public void testCreateWithDuplicatedEmailShouldFail() {
         //given
-        final var expectedCpf = "12345678901";
+        final var expectedCPF = "12345678901";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Customer already exists";
 
-        var createInput = new CreateCustomerUseCase.Input(expectedCpf, expectedEmail, expectedName);
+        var createInput = new CreateCustomerUseCase.Input(expectedCPF, expectedEmail, expectedName);
 
         final var aCustomer = new Customer();
         aCustomer.setId(UUID.randomUUID().getMostSignificantBits());
-        aCustomer.setCpf(expectedCpf);
+        aCustomer.setCpf(expectedCPF);
         aCustomer.setEmail(expectedEmail);
         aCustomer.setName(expectedName);
 
