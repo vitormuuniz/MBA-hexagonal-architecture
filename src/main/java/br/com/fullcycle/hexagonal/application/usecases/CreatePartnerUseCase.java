@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import br.com.fullcycle.hexagonal.application.UseCase;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.models.Partner;
-import br.com.fullcycle.hexagonal.services.PartnerService;
+import br.com.fullcycle.hexagonal.infrastructure.models.Partner;
+import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
 
 //Port
 public class CreatePartnerUseCase extends UseCase<CreatePartnerUseCase.Input, CreatePartnerUseCase.Output> {

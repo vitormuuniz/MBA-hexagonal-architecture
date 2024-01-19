@@ -13,19 +13,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.models.Customer;
-import br.com.fullcycle.hexagonal.models.Event;
-import br.com.fullcycle.hexagonal.models.Ticket;
-import br.com.fullcycle.hexagonal.models.TicketStatus;
-import br.com.fullcycle.hexagonal.services.CustomerService;
-import br.com.fullcycle.hexagonal.services.EventService;
+import br.com.fullcycle.hexagonal.infrastructure.models.Customer;
+import br.com.fullcycle.hexagonal.infrastructure.models.Event;
+import br.com.fullcycle.hexagonal.infrastructure.models.Ticket;
+import br.com.fullcycle.hexagonal.infrastructure.models.TicketStatus;
+import br.com.fullcycle.hexagonal.infrastructure.services.CustomerService;
+import br.com.fullcycle.hexagonal.infrastructure.services.EventService;
 import io.hypersistence.tsid.TSID;
 
 class SubscribeCustomerToEventUseCaseTest {
 
     @Test
     @DisplayName("Deve comprar um ticket de um evento")
-    public void testReserveTicket() throws Exception {
+    public void testReserveTicket() {
         //given
         final var expectedTicketsSize = 1;
         final var eventId = TSID.fast().toLong();
@@ -62,7 +62,7 @@ class SubscribeCustomerToEventUseCaseTest {
 
     @Test
     @DisplayName("Não deve comprar um ticket de um evento que não existe")
-    public void testReserveTicketWhenEventDoesNotExistsShouldThrowError() throws Exception {
+    public void testReserveTicketWhenEventDoesNotExistsShouldThrowError() {
         //given
         final var expectedError = "Event not found";
 
@@ -87,7 +87,7 @@ class SubscribeCustomerToEventUseCaseTest {
 
     @Test
     @DisplayName("Não deve comprar um ticket de um cliente que não existe")
-    public void testReserveTicketWhenCustomerDoesNotExistsShouldThrowError() throws Exception {
+    public void testReserveTicketWhenCustomerDoesNotExistsShouldThrowError() {
         //given
         final var expectedError = "Customer not found";
 
@@ -111,7 +111,7 @@ class SubscribeCustomerToEventUseCaseTest {
 
     @Test
     @DisplayName("Não deve comprar mais de um ticket de um cliente para o mesmo evento")
-    public void testReserveTicketMoreThanOnceShouldThrowError() throws Exception {
+    public void testReserveTicketMoreThanOnceShouldThrowError() {
         //given
         final var expectedError = "Email already registered";
 
@@ -137,7 +137,7 @@ class SubscribeCustomerToEventUseCaseTest {
 
     @Test
     @DisplayName("Não deve comprar um ticket de um evento esgotado")
-    public void testReserveTicketWhenEventIsSoldOutShouldThrowError() throws Exception {
+    public void testReserveTicketWhenEventIsSoldOutShouldThrowError() {
         //given
         final var expectedError = "Event sold out";
 

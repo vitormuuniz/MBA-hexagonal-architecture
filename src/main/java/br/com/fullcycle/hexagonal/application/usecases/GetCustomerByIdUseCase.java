@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import br.com.fullcycle.hexagonal.application.UseCase;
-import br.com.fullcycle.hexagonal.services.CustomerService;
+import br.com.fullcycle.hexagonal.infrastructure.services.CustomerService;
 
 //Port
 public class GetCustomerByIdUseCase extends UseCase<GetCustomerByIdUseCase.Input, Optional<GetCustomerByIdUseCase.Output>> {

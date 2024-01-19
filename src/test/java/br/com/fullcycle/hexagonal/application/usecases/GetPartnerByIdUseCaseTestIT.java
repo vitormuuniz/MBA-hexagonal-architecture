@@ -1,47 +1,49 @@
 package br.com.fullcycle.hexagonal.application.usecases;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Optional;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.infrastructure.models.Partner;
-import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
+import br.com.fullcycle.hexagonal.infrastructure.repositories.PartnerRepository;
 
-class GetPartnerByIdUseCaseTest {
+class GetPartnerByIdUseCaseTestIT extends IntegrationTest {
+
+    @Autowired
+    private GetPartnerByIdUseCase useCase;
+
+    @Autowired
+    private PartnerRepository partnerRepository;
+
+    @AfterEach
+    void tearDown() {
+        partnerRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Deve obter um partner por id")
     public void testGetById() {
         //given
-        final var expectedID = UUID.randomUUID().getMostSignificantBits();
         final var expectedCNPJ = "41536538000100";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
-        final var aPartner = new Partner();
-        aPartner.setId(expectedID);
-        aPartner.setCnpj(expectedCNPJ);
-        aPartner.setEmail(expectedEmail);
-        aPartner.setName(expectedName);
+        final var aPartner = createPartner(expectedCNPJ, expectedEmail, expectedName);
 
-        final var input = new GetPartnerByIdUseCase.Input(expectedID);
+        final var input = new GetPartnerByIdUseCase.Input(aPartner.getId());
 
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findById(expectedID)).thenReturn(Optional.of(aPartner));
-
-        final var useCase = new GetPartnerByIdUseCase(partnerService);
-
-        //then
         final var output = useCase.execute(input).get();
 
-        assertEquals(expectedID, output.id());
+        //then
+        assertEquals(aPartner.getId(), output.id());
         assertEquals(expectedCNPJ, output.cnpj());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
@@ -56,14 +58,18 @@ class GetPartnerByIdUseCaseTest {
         final var input = new GetPartnerByIdUseCase.Input(expectedID);
 
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findById(expectedID)).thenReturn(Optional.empty());
-
-        final var useCase = new GetPartnerByIdUseCase(partnerService);
-
         final var output = useCase.execute(input);
 
         //then
         assertTrue(output.isEmpty());
+    }
+
+    private Partner createPartner(String cnpj, String email, String name) {
+        final var partner = new Partner();
+        partner.setCnpj(cnpj);
+        partner.setEmail(email);
+        partner.setName(name);
+
+        return partnerRepository.save(partner);
     }
 }

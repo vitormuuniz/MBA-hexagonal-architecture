@@ -1,24 +1,37 @@
 package br.com.fullcycle.hexagonal.application.usecases;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Optional;
-
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.models.Event;
 import br.com.fullcycle.hexagonal.infrastructure.models.Partner;
-import br.com.fullcycle.hexagonal.infrastructure.services.EventService;
-import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
+import br.com.fullcycle.hexagonal.infrastructure.repositories.EventRepository;
+import br.com.fullcycle.hexagonal.infrastructure.repositories.PartnerRepository;
 import io.hypersistence.tsid.TSID;
 
-class CreateEventUseCaseTest {
+class CreateEventUseCaseTestIT extends IntegrationTest {
+
+    @Autowired
+    private CreateEventUseCase useCase;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private PartnerRepository partnerRepository;
+
+    @AfterEach
+    void tearDown() {
+        eventRepository.deleteAll();
+        partnerRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("Deve criar um evento")
@@ -27,23 +40,14 @@ class CreateEventUseCaseTest {
         final var expectedDate = "2021-01-01";
         final var expectedName = "Disney on Ice";
         final var expectedTotalSpots = 10;
-        final var expectedPartnerId = TSID.fast().toLong();
 
+        final var partner = createPartner("41536538000100", "john.doe@gmail.com", "John Doe");
+
+        final var expectedPartnerId = partner.getId();
 
         final var createInput = new CreateEventUseCase.Input(expectedDate, expectedName, expectedTotalSpots, expectedPartnerId);
 
         //when
-        final var eventService = mock(EventService.class);
-        final var partnerService = mock(PartnerService.class);
-
-        when(eventService.save(any())).thenAnswer(invocation -> {
-            final var event = invocation.getArgument(0, Event.class);
-            event.setId(TSID.fast().toLong());
-            return event;
-        });
-        when(partnerService.findById(eq(expectedPartnerId))).thenReturn(Optional.of(new Partner()));
-
-        final var useCase = new CreateEventUseCase(eventService, partnerService);
         final var actualResponse = useCase.execute(createInput);
 
         //then
@@ -64,19 +68,21 @@ class CreateEventUseCaseTest {
         final var expectedPartnerId = TSID.fast().toLong();
         final var expectedError = "Partner not found";
 
-
         final var createInput = new CreateEventUseCase.Input(expectedDate, expectedName, expectedTotalSpots, expectedPartnerId);
 
         //when
-        final var eventService = mock(EventService.class);
-        final var partnerService = mock(PartnerService.class);
-
-        when(partnerService.findById(eq(expectedPartnerId))).thenReturn(Optional.empty());
-
-        final var useCase = new CreateEventUseCase(eventService, partnerService);
         final var actualResponse = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
         //then
         assertEquals(expectedError, actualResponse.getMessage());
+    }
+
+    private Partner createPartner(String cnpj, String email, String name) {
+        final var partner = new Partner();
+        partner.setCnpj(cnpj);
+        partner.setEmail(email);
+        partner.setName(name);
+
+        return partnerRepository.save(partner);
     }
 }
