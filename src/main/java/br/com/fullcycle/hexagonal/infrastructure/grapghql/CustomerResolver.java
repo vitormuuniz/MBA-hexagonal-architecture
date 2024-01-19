@@ -9,28 +9,27 @@ import org.springframework.stereotype.Controller;
 
 import br.com.fullcycle.hexagonal.application.usecases.CreateCustomerUseCase;
 import br.com.fullcycle.hexagonal.application.usecases.GetCustomerByIdUseCase;
-import br.com.fullcycle.hexagonal.infrastructure.dtos.PartnerDTO;
-import br.com.fullcycle.hexagonal.infrastructure.services.CustomerService;
+import br.com.fullcycle.hexagonal.infrastructure.dtos.NewPartnerDTO;
 
 //Adapter
 @Controller
 public class CustomerResolver {
 
-    private final CustomerService customerService;
+    private final CreateCustomerUseCase createCustomerUseCase;
+    private final GetCustomerByIdUseCase getCustomerByIdUseCase;
 
-    public CustomerResolver(CustomerService customerService) {
-        this.customerService = Objects.requireNonNull(customerService);
+    public CustomerResolver(final CreateCustomerUseCase createCustomerUseCase, final GetCustomerByIdUseCase getCustomerByIdUseCase) {
+        this.createCustomerUseCase = Objects.requireNonNull(createCustomerUseCase);
+        this.getCustomerByIdUseCase = Objects.requireNonNull(getCustomerByIdUseCase);
     }
 
     @MutationMapping
-    public CreateCustomerUseCase.Output createCustomer(@Argument PartnerDTO input) {
-        final var useCase = new CreateCustomerUseCase(customerService);
-        return useCase.execute(new CreateCustomerUseCase.Input(input.getCnpj(), input.getEmail(), input.getName()));
+    public CreateCustomerUseCase.Output createCustomer(@Argument NewPartnerDTO input) {
+        return createCustomerUseCase.execute(new CreateCustomerUseCase.Input(input.cnpj(), input.email(), input.name()));
     }
 
     @QueryMapping
     public GetCustomerByIdUseCase.Output customerOfId(@Argument Long id) {
-        final var useCase = new GetCustomerByIdUseCase(customerService);
-        return useCase.execute(new GetCustomerByIdUseCase.Input(id)).orElse(null);
+        return getCustomerByIdUseCase.execute(new GetCustomerByIdUseCase.Input(id)).orElse(null);
     }
 }

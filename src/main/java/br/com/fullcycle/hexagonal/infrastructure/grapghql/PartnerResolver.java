@@ -9,28 +9,27 @@ import org.springframework.stereotype.Controller;
 
 import br.com.fullcycle.hexagonal.application.usecases.CreatePartnerUseCase;
 import br.com.fullcycle.hexagonal.application.usecases.GetPartnerByIdUseCase;
-import br.com.fullcycle.hexagonal.infrastructure.dtos.PartnerDTO;
-import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
+import br.com.fullcycle.hexagonal.infrastructure.dtos.NewPartnerDTO;
 
 //Adapter
 @Controller
 public class PartnerResolver {
 
-    private final PartnerService partnerService;
+    private final CreatePartnerUseCase createPartnerUseCase;
+    private final GetPartnerByIdUseCase getPartnerByIdUseCase;
 
-    public PartnerResolver(PartnerService partnerService) {
-        this.partnerService = Objects.requireNonNull(partnerService);
+    public PartnerResolver(final CreatePartnerUseCase createPartnerUseCase, GetPartnerByIdUseCase getPartnerByIdUseCase) {
+        this.createPartnerUseCase = Objects.requireNonNull(createPartnerUseCase);
+        this.getPartnerByIdUseCase = Objects.requireNonNull(getPartnerByIdUseCase);
     }
 
     @MutationMapping
-    public CreatePartnerUseCase.Output createPartner(@Argument PartnerDTO input) {
-        final var useCase = new CreatePartnerUseCase(partnerService);
-        return useCase.execute(new CreatePartnerUseCase.Input(input.getCnpj(), input.getEmail(), input.getName()));
+    public CreatePartnerUseCase.Output createPartner(@Argument NewPartnerDTO input) {
+        return createPartnerUseCase.execute(new CreatePartnerUseCase.Input(input.cnpj(), input.email(), input.name()));
     }
 
     @QueryMapping
     public GetPartnerByIdUseCase.Output partnerOfId(@Argument Long id) {
-        final var useCase = new GetPartnerByIdUseCase(partnerService);
-        return useCase.execute(new GetPartnerByIdUseCase.Input(id)).orElse(null);
+        return getPartnerByIdUseCase.execute(new GetPartnerByIdUseCase.Input(id)).orElse(null);
     }
 }
