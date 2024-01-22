@@ -5,7 +5,6 @@ import java.util.UUID;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 
 public record PartnerId(UUID value) {
-
     public PartnerId {
         if (value == null) {
             throw new ValidationException("Invalid value for PartnerId");

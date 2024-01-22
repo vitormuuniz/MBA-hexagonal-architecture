@@ -5,7 +5,6 @@ import java.util.UUID;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 
 public record CustomerId (UUID value) {
-
     public CustomerId {
         if (value == null) {
             throw new ValidationException("Invalid value for CustomerId");

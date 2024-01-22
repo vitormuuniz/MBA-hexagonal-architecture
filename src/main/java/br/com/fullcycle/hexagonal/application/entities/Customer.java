@@ -3,7 +3,6 @@ package br.com.fullcycle.hexagonal.application.entities;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 
 public record Customer(CustomerId customerId, Name name, Cpf cpf, Email email) {
-
     public Customer {
         if (customerId == null) {
             throw new ValidationException("Invalid customerId for Customer");
