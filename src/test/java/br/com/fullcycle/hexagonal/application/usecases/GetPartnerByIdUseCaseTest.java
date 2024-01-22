@@ -1,17 +1,14 @@
 package br.com.fullcycle.hexagonal.application.usecases;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import br.com.fullcycle.hexagonal.infrastructure.models.Partner;
-import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
+import br.com.fullcycle.hexagonal.application.InMemoryPartnerRepository;
+import br.com.fullcycle.hexagonal.application.entities.Partner;
 
 class GetPartnerByIdUseCaseTest {
 
@@ -19,24 +16,21 @@ class GetPartnerByIdUseCaseTest {
     @DisplayName("Deve obter um partner por id")
     public void testGetById() {
         //given
-        final var expectedID = UUID.randomUUID().getMostSignificantBits();
-        final var expectedCNPJ = "41536538000100";
+        final var expectedCNPJ = "41.536.538/0001-00";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
-        final var aPartner = new Partner();
-        aPartner.setId(expectedID);
-        aPartner.setCnpj(expectedCNPJ);
-        aPartner.setEmail(expectedEmail);
-        aPartner.setName(expectedName);
+        final var aPartner = Partner.newPartner(expectedName, expectedCNPJ, expectedEmail);
+
+        final var partnerRepository = new InMemoryPartnerRepository();
+        partnerRepository.create(aPartner);
+
+        final var expectedID = aPartner.partnerId().value().toString();
 
         final var input = new GetPartnerByIdUseCase.Input(expectedID);
 
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findById(expectedID)).thenReturn(Optional.of(aPartner));
-
-        final var useCase = new GetPartnerByIdUseCase(partnerService);
+        final var useCase = new GetPartnerByIdUseCase(partnerRepository);
 
         //then
         final var output = useCase.execute(input).get();
@@ -51,15 +45,14 @@ class GetPartnerByIdUseCaseTest {
     @DisplayName("Deve obter vazio ao tentar recuperar um partner não existente por id")
     public void testGetByIdWithInvalidID() {
         //given
-        final var expectedID = UUID.randomUUID().getMostSignificantBits();
+        final var expectedID = UUID.randomUUID().toString();
+
+        final var partnerRepository = new InMemoryPartnerRepository();
 
         final var input = new GetPartnerByIdUseCase.Input(expectedID);
 
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findById(expectedID)).thenReturn(Optional.empty());
-
-        final var useCase = new GetPartnerByIdUseCase(partnerService);
+        final var useCase = new GetPartnerByIdUseCase(partnerRepository);
 
         final var output = useCase.execute(input);
 

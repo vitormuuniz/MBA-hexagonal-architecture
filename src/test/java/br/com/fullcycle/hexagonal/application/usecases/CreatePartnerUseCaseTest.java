@@ -1,19 +1,13 @@
 package br.com.fullcycle.hexagonal.application.usecases;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import br.com.fullcycle.hexagonal.application.InMemoryPartnerRepository;
+import br.com.fullcycle.hexagonal.application.entities.Partner;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.models.Partner;
-import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
 
 class CreatePartnerUseCaseTest {
 
@@ -21,23 +15,16 @@ class CreatePartnerUseCaseTest {
     @DisplayName("Deve criar um parceiro")
     public void testCreatePartner() {
         //given
-        final var expectedCNPJ = "41536538000100";
+        final var expectedCNPJ = "41.536.538/0001-00";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
+
+        final var partnerRepository = new InMemoryPartnerRepository();
 
         var createInput = new CreatePartnerUseCase.Input(expectedCNPJ, expectedEmail, expectedName);
 
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findByCnpj(expectedCNPJ)).thenReturn(Optional.empty());
-        when(partnerService.findByEmail(expectedEmail)).thenReturn(Optional.empty());
-        when(partnerService.save(any())).thenAnswer(invocation -> {
-            var partner = invocation.getArgument(0, Partner.class);
-            partner.setId(UUID.randomUUID().getMostSignificantBits());
-            return partner;
-        });
-
-        final var useCase = new CreatePartnerUseCase(partnerService);
+        final var useCase = new CreatePartnerUseCase(partnerRepository);
 
         final var output = useCase.execute(createInput);
 
@@ -52,24 +39,20 @@ class CreatePartnerUseCaseTest {
     @DisplayName("Não deve cadastrar um parceiro com CNPJ duplicado")
     public void testCreateWithDuplicatedCNPJShouldFail() {
         //given
-        final var expectedCNPJ = "41536538000100";
+        final var expectedCNPJ = "41.536.538/0001-00";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Partner already exists";
 
+        final var aPartner = Partner.newPartner(expectedName, expectedCNPJ, "another-email@gmail.com");
+
+        final var partnerRepository = new InMemoryPartnerRepository();
+        partnerRepository.create(aPartner);
+
         var createInput = new CreatePartnerUseCase.Input(expectedCNPJ, expectedEmail, expectedName);
 
-        final var aPartner = new Partner();
-        aPartner.setId(UUID.randomUUID().getMostSignificantBits());
-        aPartner.setCnpj(expectedCNPJ);
-        aPartner.setEmail(expectedEmail);
-        aPartner.setName(expectedName);
-
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findByCnpj(expectedCNPJ)).thenReturn(Optional.of(aPartner));
-
-        final var useCase = new CreatePartnerUseCase(partnerService);
+        final var useCase = new CreatePartnerUseCase(partnerRepository);
 
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
@@ -81,24 +64,20 @@ class CreatePartnerUseCaseTest {
     @DisplayName("Não deve cadastrar um parceiro com Email duplicado")
     public void testCreateWithDuplicatedEmailShouldFail() {
         //given
-        final var expectedCNPJ = "41536538000100";
+        final var expectedCNPJ = "41.536.538/0001-00";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Partner already exists";
 
-        var createInput = new CreatePartnerUseCase.Input(expectedCNPJ, expectedEmail, expectedName);
+        final var aPartner = Partner.newPartner(expectedName, expectedCNPJ, expectedEmail);
 
-        final var aPartner = new Partner();
-        aPartner.setId(UUID.randomUUID().getMostSignificantBits());
-        aPartner.setCnpj(expectedCNPJ);
-        aPartner.setEmail(expectedEmail);
-        aPartner.setName(expectedName);
+        final var partnerRepository = new InMemoryPartnerRepository();
+        partnerRepository.create(aPartner);
+
+        var createInput = new CreatePartnerUseCase.Input("11.222.333/4444-55", expectedEmail, expectedName);
 
         //when
-        final var partnerService = mock(PartnerService.class);
-        when(partnerService.findByEmail(expectedEmail)).thenReturn(Optional.of(aPartner));
-
-        final var useCase = new CreatePartnerUseCase(partnerService);
+        final var useCase = new CreatePartnerUseCase(partnerRepository);
 
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
