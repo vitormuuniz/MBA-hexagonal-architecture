@@ -46,7 +46,7 @@ public class CreateCustomerUseCaseTest {
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Customer already exists";
 
-        final var aCustomer = Customer.newCustomer(expectedName, expectedCPF, expectedEmail);
+        final var aCustomer = Customer.newCustomer(expectedName, expectedCPF, "another-email@gmail.com");
 
         final var customerRepository = new InMemoryCustomerRepository();
         customerRepository.create(aCustomer);
@@ -71,7 +71,7 @@ public class CreateCustomerUseCaseTest {
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Customer already exists";
 
-        final var aCustomer = Customer.newCustomer(expectedName, expectedCPF, expectedEmail);
+        final var aCustomer = Customer.newCustomer(expectedName, "111.222.333-44", expectedEmail);
 
         final var customerRepository = new InMemoryCustomerRepository();
         customerRepository.create(aCustomer);

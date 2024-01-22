@@ -18,7 +18,7 @@ public class CreateCustomerUseCase extends UseCase<CreateCustomerUseCase.Input, 
 
     @Override
     public Output execute(Input input) {
-        if (customerRepository.customerOfCpf(input.cpf).isPresent()) {
+        if (customerRepository.customerOfCPF(input.cpf).isPresent()) {
             throw new ValidationException("Customer already exists");
         }
         if (customerRepository.customerOfEmail(input.email).isPresent()) {
@@ -27,7 +27,12 @@ public class CreateCustomerUseCase extends UseCase<CreateCustomerUseCase.Input, 
 
         var customer = customerRepository.create(Customer.newCustomer(input.name(), input.cpf(), input.email()));
 
-        return new Output(customer.customerId().value().toString(), customer.cpf(), customer.email(), customer.name());
+        return new Output(
+                customer.customerId().value().toString(),
+                customer.cpf().value(),
+                customer.email().value(),
+                customer.name().value()
+        );
     }
 
     public record Input(String cpf, String email, String name) {}
