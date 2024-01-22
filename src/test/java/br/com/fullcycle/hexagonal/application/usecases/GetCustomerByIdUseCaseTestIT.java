@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
-import br.com.fullcycle.hexagonal.infrastructure.models.Customer;
+import br.com.fullcycle.hexagonal.application.entities.Customer;
 import br.com.fullcycle.hexagonal.infrastructure.repositories.CustomerRepository;
 
 class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
@@ -31,20 +31,20 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
     @DisplayName("Deve obter um cliente por id")
     public void testGetById() {
         //given
-        final var expectedCpf = "12345678901";
+        final var expectedCPF = "12345678901";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
-        final var aCustomer = createCustomer(expectedCpf, expectedEmail, expectedName);
+        final var aCustomer = Customer.newCustomer(expectedName, expectedCPF, expectedEmail);
 
-        final var input = new GetCustomerByIdUseCase.Input(aCustomer.getId());
+        final var input = new GetCustomerByIdUseCase.Input(aCustomer.customerId().toString());
 
         //when
         final var output = useCase.execute(input).get();
 
         //then
-        assertEquals(aCustomer.getId(), output.id());
-        assertEquals(expectedCpf, output.cpf());
+        assertEquals(aCustomer.customerId().toString(), output.id());
+        assertEquals(expectedCPF, output.cpf());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
     }
@@ -53,7 +53,7 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
     @DisplayName("Deve obter vazio ao tentar recuperar um cliente não existente por id")
     public void testGetByIdWithInvalidID() {
         //given
-        final var expectedID = UUID.randomUUID().getMostSignificantBits();
+        final var expectedID = UUID.randomUUID().toString();
 
         final var input = new GetCustomerByIdUseCase.Input(expectedID);
 
@@ -62,14 +62,5 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
 
         //then
         assertTrue(output.isEmpty());
-    }
-
-    private Customer createCustomer(String cpf, String email, String name) {
-        final var customer = new Customer();
-        customer.setCpf(cpf);
-        customer.setEmail(email);
-        customer.setName(name);
-
-        return customerRepository.save(customer);
     }
 }
