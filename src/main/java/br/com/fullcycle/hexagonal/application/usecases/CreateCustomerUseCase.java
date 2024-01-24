@@ -3,7 +3,7 @@ package br.com.fullcycle.hexagonal.application.usecases;
 import java.util.Objects;
 
 import br.com.fullcycle.hexagonal.application.UseCase;
-import br.com.fullcycle.hexagonal.application.entities.Customer;
+import br.com.fullcycle.hexagonal.application.domain.Customer;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 import br.com.fullcycle.hexagonal.application.repositories.CustomerRepository;
 

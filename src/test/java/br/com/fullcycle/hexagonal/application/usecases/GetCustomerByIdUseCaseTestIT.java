@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
-import br.com.fullcycle.hexagonal.application.entities.Customer;
+import br.com.fullcycle.hexagonal.application.domain.Customer;
 import br.com.fullcycle.hexagonal.infrastructure.repositories.CustomerRepository;
 
 class GetCustomerByIdUseCaseTestIT extends IntegrationTest {

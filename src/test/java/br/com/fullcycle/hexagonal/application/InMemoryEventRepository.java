@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import br.com.fullcycle.hexagonal.application.entities.Event;
-import br.com.fullcycle.hexagonal.application.entities.EventId;
+import br.com.fullcycle.hexagonal.application.domain.Event;
+import br.com.fullcycle.hexagonal.application.domain.EventId;
 import br.com.fullcycle.hexagonal.application.repositories.EventRepository;
 
 public class InMemoryEventRepository implements EventRepository {

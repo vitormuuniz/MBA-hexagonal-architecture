@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import br.com.fullcycle.hexagonal.application.entities.Customer;
-import br.com.fullcycle.hexagonal.application.entities.CustomerId;
+import br.com.fullcycle.hexagonal.application.domain.Customer;
+import br.com.fullcycle.hexagonal.application.domain.CustomerId;
 import br.com.fullcycle.hexagonal.application.repositories.CustomerRepository;
 
 public class InMemoryCustomerRepository implements CustomerRepository {

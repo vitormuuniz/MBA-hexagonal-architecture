@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import br.com.fullcycle.hexagonal.application.InMemoryEventRepository;
 import br.com.fullcycle.hexagonal.application.InMemoryPartnerRepository;
-import br.com.fullcycle.hexagonal.application.entities.Partner;
-import br.com.fullcycle.hexagonal.application.entities.PartnerId;
+import br.com.fullcycle.hexagonal.application.domain.Partner;
+import br.com.fullcycle.hexagonal.application.domain.PartnerId;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 
 class CreateEventUseCaseTest {

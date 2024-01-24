@@ -3,8 +3,8 @@ package br.com.fullcycle.hexagonal.application.usecases;
 import java.util.Objects;
 
 import br.com.fullcycle.hexagonal.application.UseCase;
-import br.com.fullcycle.hexagonal.application.entities.Event;
-import br.com.fullcycle.hexagonal.application.entities.PartnerId;
+import br.com.fullcycle.hexagonal.application.domain.Event;
+import br.com.fullcycle.hexagonal.application.domain.PartnerId;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
 import br.com.fullcycle.hexagonal.application.repositories.EventRepository;
 import br.com.fullcycle.hexagonal.application.repositories.PartnerRepository;

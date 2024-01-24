@@ -1,4 +1,4 @@
-package br.com.fullcycle.hexagonal.application.entities;
+package br.com.fullcycle.hexagonal.application.domain;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
