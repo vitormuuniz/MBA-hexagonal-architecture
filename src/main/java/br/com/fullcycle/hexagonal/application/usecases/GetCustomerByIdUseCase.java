@@ -20,7 +20,7 @@ public class GetCustomerByIdUseCase extends UseCase<GetCustomerByIdUseCase.Input
     public Optional<Output> execute(Input input) {
         return customerRepository.customerOfId(CustomerId.with(input.id))
                 .map(customer -> new Output(
-                                    customer.customerId().value().toString(),
+                                    customer.customerId().value(),
                                     customer.cpf().value(),
                                     customer.email().value(),
                                     customer.name().value())

@@ -23,7 +23,7 @@ public class InMemoryPartnerRepository implements PartnerRepository {
 
     @Override
     public Optional<Partner> partnerOfId(PartnerId customerId) {
-        return Optional.ofNullable(this.partners.get(Objects.requireNonNull(customerId).value().toString()));
+        return Optional.ofNullable(this.partners.get(Objects.requireNonNull(customerId).value()));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class InMemoryPartnerRepository implements PartnerRepository {
 
     @Override
     public Partner create(Partner partner) {
-        this.partners.put(partner.partnerId().value().toString(), partner);
+        this.partners.put(partner.partnerId().value(), partner);
         this.partnersByCNPJ.put(partner.cnpj().value(), partner);
         this.partnersByEmail.put(partner.email().value(), partner);
         return partner;
@@ -46,7 +46,7 @@ public class InMemoryPartnerRepository implements PartnerRepository {
 
     @Override
     public Partner update(Partner partner) {
-        this.partners.put(partner.partnerId().value().toString(), partner);
+        this.partners.put(partner.partnerId().value(), partner);
         this.partnersByCNPJ.put(partner.cnpj().value(), partner);
         this.partnersByEmail.put(partner.email().value(), partner);
         return partner;
