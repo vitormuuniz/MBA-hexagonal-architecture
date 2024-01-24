@@ -50,13 +50,13 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         final var aCustomer = createCustomer("12345678901", "john.doe@gmail.com", "John Doe");
         final var aEvent = createEvent("Disney on Ice", 10);
 
-        final var createInput = new SubscribeCustomerToEventUseCase.Input(aEvent.getId(), aCustomer.getId());
+        final var createInput = new SubscribeCustomerToEventUseCase.Input(aEvent.getId().toString(), aCustomer.getId().toString());
 
         //when
         final var actualResponse = useCase.execute(createInput);
 
         //then
-        assertEquals(aEvent.getId(), actualResponse.eventId());
+        assertEquals(aEvent.getId().toString(), actualResponse.eventId());
         assertNotNull(actualResponse.reservationDate());
         assertEquals(TicketStatus.PENDING.name(), actualResponse.ticketStatus());
     }
@@ -67,11 +67,11 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         //given
         final var expectedError = "Event not found";
 
-        final var eventId = TSID.fast().toLong();
+        final var eventId = TSID.fast().toString();
 
         final var aCustomer = createCustomer("12345678901", "john.doe@gmail.com", "John Doe");
 
-        final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, aCustomer.getId());
+        final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, aCustomer.getId().toString());
 
         //when
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
@@ -86,8 +86,8 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         //given
         final var expectedError = "Customer not found";
 
-        final var eventId = TSID.fast().toLong();
-        final var customerId = TSID.fast().toLong();
+        final var eventId = TSID.fast().toString();
+        final var customerId = TSID.fast().toString();
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
@@ -109,8 +109,8 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
 
         createTicket(aCustomer, aEvent);
 
-        final var eventId = aEvent.getId();
-        final var customerId = aCustomer.getId();
+        final var eventId = aEvent.getId().toString();
+        final var customerId = aCustomer.getId().toString();
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
@@ -140,7 +140,7 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         final var aCustomer = createCustomer("12345678901", "john.doe@gmail.com", "John Doe");
         final var aEvent = createEvent("Disney on Ice", 0);
 
-        final var createInput = new SubscribeCustomerToEventUseCase.Input(aEvent.getId(), aCustomer.getId());
+        final var createInput = new SubscribeCustomerToEventUseCase.Input(aEvent.getId().toString(), aCustomer.getId().toString());
 
         //when
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));

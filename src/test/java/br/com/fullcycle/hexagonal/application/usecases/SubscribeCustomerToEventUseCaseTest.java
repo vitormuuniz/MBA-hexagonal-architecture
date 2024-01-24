@@ -3,23 +3,20 @@ package br.com.fullcycle.hexagonal.application.usecases;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import br.com.fullcycle.hexagonal.application.InMemoryCustomerRepository;
+import br.com.fullcycle.hexagonal.application.InMemoryEventRepository;
+import br.com.fullcycle.hexagonal.application.InMemoryTicketRepository;
+import br.com.fullcycle.hexagonal.application.domain.Customer;
+import br.com.fullcycle.hexagonal.application.domain.CustomerId;
+import br.com.fullcycle.hexagonal.application.domain.Event;
+import br.com.fullcycle.hexagonal.application.domain.EventId;
+import br.com.fullcycle.hexagonal.application.domain.Partner;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.models.Customer;
-import br.com.fullcycle.hexagonal.infrastructure.models.Event;
-import br.com.fullcycle.hexagonal.infrastructure.models.Ticket;
 import br.com.fullcycle.hexagonal.infrastructure.models.TicketStatus;
-import br.com.fullcycle.hexagonal.infrastructure.services.CustomerService;
-import br.com.fullcycle.hexagonal.infrastructure.services.EventService;
-import io.hypersistence.tsid.TSID;
 
 class SubscribeCustomerToEventUseCaseTest {
 
@@ -27,37 +24,34 @@ class SubscribeCustomerToEventUseCaseTest {
     @DisplayName("Deve comprar um ticket de um evento")
     public void testReserveTicket() {
         //given
-        final var expectedTicketsSize = 1;
-        final var eventId = TSID.fast().toLong();
-        final var customerId = TSID.fast().toLong();
+        final var expectedTicketSize = 1;
+        final var expectedTicketStatus = TicketStatus.PENDING.name();
 
-        final var aEvent = new Event();
-        aEvent.setId(eventId);
-        aEvent.setName("Disney on Ice");
-        aEvent.setTotalSpots(10);
+        final var eventRepository = new InMemoryEventRepository();
+        final var aPartner = Partner.newPartner("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
+        final var anEvent = eventRepository.create(Event.newEvent("Disney on Ice", "2021-01-01", 10, aPartner));
+        final var eventId = anEvent.eventId().value();
+
+        final var customerRepository = new InMemoryCustomerRepository();
+        final var aCustomer = customerRepository.create(Customer.newCustomer("Vitor Doe", "123.456.789-01", "vitor.doe@gmail.com"));
+        final var customerId = aCustomer.customerId().value();
+
+        final var ticketRepository = new InMemoryTicketRepository();
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
         //when
-        final var customerService = mock(CustomerService.class);
-        final var eventService = mock(EventService.class);
-
-        when(customerService.findById(customerId)).thenReturn(Optional.of(new Customer()));
-        when(eventService.findById(eventId)).thenReturn(Optional.of(aEvent));
-        when(eventService.findTicketByEventIdAndCustomerId(eventId, customerId)).thenReturn(Optional.empty());
-        when(eventService.save(any())).thenAnswer(invocation -> {
-            final var event = invocation.getArgument(0, Event.class);
-            assertEquals(expectedTicketsSize, event.getTickets().size());
-            return event;
-        });
-
-        final var useCase = new SubscribeCustomerToEventUseCase(eventService, customerService);
+        final var useCase = new SubscribeCustomerToEventUseCase(eventRepository, customerRepository, ticketRepository);
         final var actualResponse = useCase.execute(createInput);
 
         //then
         assertEquals(eventId, actualResponse.eventId());
+        assertNotNull(actualResponse.ticketId());
         assertNotNull(actualResponse.reservationDate());
-        assertEquals(TicketStatus.PENDING.name(), actualResponse.ticketStatus());
+        assertEquals(expectedTicketStatus, actualResponse.ticketStatus());
+
+        final var actualEvent = eventRepository.eventOfId(anEvent.eventId()).get();
+        assertEquals(expectedTicketSize, actualEvent.allTickets().size());
     }
 
     @Test
@@ -66,19 +60,19 @@ class SubscribeCustomerToEventUseCaseTest {
         //given
         final var expectedError = "Event not found";
 
-        final var eventId = TSID.fast().toLong();
-        final var customerId = TSID.fast().toLong();
+        final var customerRepository = new InMemoryCustomerRepository();
+        final var aCustomer = customerRepository.create(customerRepository.create(Customer.newCustomer("Vitor Doe", "123.456.789-01", "vitor.doe@gmail.com")));
+        final var customerId = aCustomer.customerId().value();
+
+        final var eventId = EventId.unique().value();
+
+        final var ticketRepository = new InMemoryTicketRepository();
+        final var eventRepository = new InMemoryEventRepository();
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
         //when
-        final var customerService = mock(CustomerService.class);
-        final var eventService = mock(EventService.class);
-
-        when(customerService.findById(customerId)).thenReturn(Optional.of(new Customer()));
-        when(eventService.findById(eventId)).thenReturn(Optional.empty());
-
-        final var useCase = new SubscribeCustomerToEventUseCase(eventService, customerService);
+        final var useCase = new SubscribeCustomerToEventUseCase(eventRepository, customerRepository, ticketRepository);
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
         //then
@@ -91,18 +85,20 @@ class SubscribeCustomerToEventUseCaseTest {
         //given
         final var expectedError = "Customer not found";
 
-        final var eventId = TSID.fast().toLong();
-        final var customerId = TSID.fast().toLong();
+        final var eventRepository = new InMemoryEventRepository();
+        final var aPartner = Partner.newPartner("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
+        final var anEvent = eventRepository.create(eventRepository.create(Event.newEvent("Disney on Ice", "2021-01-01", 10, aPartner)));
+        final var eventId = anEvent.eventId().value();
+
+        final var customerId = CustomerId.unique().value();
+
+        final var customerRepository = new InMemoryCustomerRepository();
+        final var ticketRepository = new InMemoryTicketRepository();
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
         //when
-        final var eventService = mock(EventService.class);
-        final var customerService = mock(CustomerService.class);
-
-        when(customerService.findById(customerId)).thenReturn(Optional.empty());
-
-        final var useCase = new SubscribeCustomerToEventUseCase(eventService, customerService);
+        final var useCase = new SubscribeCustomerToEventUseCase(eventRepository, customerRepository, ticketRepository);
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
         //then
@@ -115,20 +111,22 @@ class SubscribeCustomerToEventUseCaseTest {
         //given
         final var expectedError = "Email already registered";
 
-        final var eventId = TSID.fast().toLong();
-        final var customerId = TSID.fast().toLong();
+        final var customerRepository = new InMemoryCustomerRepository();
+        final var aCustomer = customerRepository.create(Customer.newCustomer("Vitor Doe", "123.456.789-01", "vitor.doe@gmail.com"));
+        final var customerId = aCustomer.customerId().value();
+
+        final var eventRepository = new InMemoryEventRepository();
+        final var aPartner = Partner.newPartner("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
+        final var anEvent = eventRepository.create(Event.newEvent("Disney on Ice", "2021-01-01", 10, aPartner));
+        final var eventId = anEvent.eventId().value();
+
+        final var ticketRepository = new InMemoryTicketRepository();
+        ticketRepository.create(anEvent.reserveTicket(aCustomer.customerId()));
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
         //when
-        final var customerService = mock(CustomerService.class);
-        final var eventService = mock(EventService.class);
-
-        when(customerService.findById(customerId)).thenReturn(Optional.of(new Customer()));
-        when(eventService.findById(eventId)).thenReturn(Optional.of(new Event()));
-        when(eventService.findTicketByEventIdAndCustomerId(eventId, customerId)).thenReturn(Optional.of(new Ticket()));
-
-        final var useCase = new SubscribeCustomerToEventUseCase(eventService, customerService);
+        final var useCase = new SubscribeCustomerToEventUseCase(eventRepository, customerRepository, ticketRepository);
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
         //then
@@ -141,25 +139,23 @@ class SubscribeCustomerToEventUseCaseTest {
         //given
         final var expectedError = "Event sold out";
 
-        final var eventId = TSID.fast().toLong();
-        final var customerId = TSID.fast().toLong();
+        final var customerRepository = new InMemoryCustomerRepository();
+        final var aCustomer = customerRepository.create(Customer.newCustomer("Vitor Doe", "123.456.789-01", "vitor.doe@gmail.com"));
+        final var anotherCustomer = customerRepository.create(Customer.newCustomer("Pedro Doe", "123.456.789-10", "pedro.doe@gmail.com"));
+        final var customerId = aCustomer.customerId().value();
 
-        final var aEvent = new Event();
-        aEvent.setId(eventId);
-        aEvent.setName("Disney on Ice");
-        aEvent.setTotalSpots(0);
+        final var eventRepository = new InMemoryEventRepository();
+        final var aPartner = Partner.newPartner("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
+        final var anEvent = eventRepository.create(Event.newEvent("Disney on Ice", "2021-01-01", 1, aPartner));
+        final var eventId = anEvent.eventId().value();
+
+        final var ticketRepository = new InMemoryTicketRepository();
+        ticketRepository.create(anEvent.reserveTicket(anotherCustomer.customerId()));
 
         final var createInput = new SubscribeCustomerToEventUseCase.Input(eventId, customerId);
 
         //when
-        final var customerService = mock(CustomerService.class);
-        final var eventService = mock(EventService.class);
-
-        when(customerService.findById(customerId)).thenReturn(Optional.of(new Customer()));
-        when(eventService.findById(eventId)).thenReturn(Optional.of(aEvent));
-        when(eventService.findTicketByEventIdAndCustomerId(eventId, customerId)).thenReturn(Optional.empty());
-
-        final var useCase = new SubscribeCustomerToEventUseCase(eventService, customerService);
+        final var useCase = new SubscribeCustomerToEventUseCase(eventRepository, customerRepository, ticketRepository);
         final var actualException = assertThrows(ValidationException.class, () -> useCase.execute(createInput));
 
         //then

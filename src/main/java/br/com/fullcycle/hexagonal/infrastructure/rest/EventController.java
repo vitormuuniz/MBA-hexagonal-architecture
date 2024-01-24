@@ -42,7 +42,7 @@ public class EventController {
 
     @Transactional
     @PostMapping(value = "/{id}/subscribe")
-    public ResponseEntity<?> subscribe(@PathVariable Long id, @RequestBody SubscribeDTO input) {
+    public ResponseEntity<?> subscribe(@PathVariable String id, @RequestBody SubscribeDTO input) {
         try {
             final var output = subscribeCustomerToEventUseCase.execute(new SubscribeCustomerToEventUseCase.Input(id, input.customerId()));
             return ResponseEntity.ok(output);
