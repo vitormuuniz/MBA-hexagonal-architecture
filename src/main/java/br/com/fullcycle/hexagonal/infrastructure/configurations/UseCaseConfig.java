@@ -13,19 +13,16 @@ import br.com.fullcycle.hexagonal.application.usecases.GetPartnerByIdUseCase;
 import br.com.fullcycle.hexagonal.application.usecases.SubscribeCustomerToEventUseCase;
 import br.com.fullcycle.hexagonal.infrastructure.services.CustomerService;
 import br.com.fullcycle.hexagonal.infrastructure.services.EventService;
-import br.com.fullcycle.hexagonal.infrastructure.services.PartnerService;
 
 @Configuration
 public class UseCaseConfig {
 
     private final CustomerService customerService;
     private final EventService eventService;
-    private final PartnerService partnerService;
 
-    public UseCaseConfig(CustomerService customerService, EventService eventService, PartnerService partnerService) {
+    public UseCaseConfig(CustomerService customerService, EventService eventService) {
         this.customerService = Objects.requireNonNull(customerService);
         this.eventService = Objects.requireNonNull(eventService);
-        this.partnerService = Objects.requireNonNull(partnerService);
     }
 
     @Bean
@@ -35,7 +32,7 @@ public class UseCaseConfig {
 
     @Bean
     public CreateEventUseCase createEventUseCase() {
-        return new CreateEventUseCase(eventService, partnerService);
+        return new CreateEventUseCase(null, null);
     }
 
     @Bean
