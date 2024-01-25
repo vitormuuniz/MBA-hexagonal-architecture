@@ -7,8 +7,8 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.fullcycle.hexagonal.application.usecases.CreateEventUseCase;
-import br.com.fullcycle.hexagonal.application.usecases.SubscribeCustomerToEventUseCase;
+import br.com.fullcycle.hexagonal.application.usecases.event.CreateEventUseCase;
+import br.com.fullcycle.hexagonal.application.usecases.event.SubscribeCustomerToEventUseCase;
 import br.com.fullcycle.hexagonal.infrastructure.dtos.NewEventDTO;
 import br.com.fullcycle.hexagonal.infrastructure.dtos.SubscribeDTO;
 

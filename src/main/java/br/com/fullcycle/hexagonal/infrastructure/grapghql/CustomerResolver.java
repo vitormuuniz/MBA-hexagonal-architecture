@@ -7,8 +7,8 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
-import br.com.fullcycle.hexagonal.application.usecases.CreateCustomerUseCase;
-import br.com.fullcycle.hexagonal.application.usecases.GetCustomerByIdUseCase;
+import br.com.fullcycle.hexagonal.application.usecases.customer.CreateCustomerUseCase;
+import br.com.fullcycle.hexagonal.application.usecases.customer.GetCustomerByIdUseCase;
 import br.com.fullcycle.hexagonal.infrastructure.dtos.NewPartnerDTO;
 
 //Adapter
