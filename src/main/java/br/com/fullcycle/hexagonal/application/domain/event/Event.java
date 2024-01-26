@@ -94,7 +94,11 @@ public class Event {
         if (date == null) {
             throw new ValidationException("Invalid date for Event");
         }
-        this.date = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+        try {
+            this.date = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+        } catch (RuntimeException ex) {
+            throw new ValidationException("Invalid date for Event", ex);
+        }
     }
 
     private void setTotalSpots(final Integer totalSpots) {
