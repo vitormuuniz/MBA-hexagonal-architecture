@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.models.Customer;
-import br.com.fullcycle.hexagonal.infrastructure.repositories.CustomerRepository;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.CustomerEntity;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.CustomerJpaRepository;
 
 public class CreateCustomerUseCaseTestIT extends IntegrationTest {
 
@@ -20,7 +20,7 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     private CreateCustomerUseCase useCase;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerJpaRepository customerRepository;
 
     @AfterEach
     void tearDown() {
@@ -88,7 +88,7 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     }
 
     private void createCustomer(String cpf, String email, String name) {
-        final var aCustomer = new Customer();
+        final var aCustomer = new CustomerEntity();
         aCustomer.setCpf(cpf);
         aCustomer.setEmail(email);
         aCustomer.setName(name);

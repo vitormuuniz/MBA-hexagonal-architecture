@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.models.Partner;
-import br.com.fullcycle.hexagonal.infrastructure.repositories.PartnerRepository;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.PartnerEntity;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.PartnerJpaRepository;
 
 class CreatePartnerUseCaseTestIT extends IntegrationTest {
 
@@ -20,7 +20,7 @@ class CreatePartnerUseCaseTestIT extends IntegrationTest {
     private CreatePartnerUseCase useCase;
 
     @Autowired
-    private PartnerRepository partnerRepository;
+    private PartnerJpaRepository partnerRepository;
 
     @AfterEach
     void tearDown() {
@@ -88,7 +88,7 @@ class CreatePartnerUseCaseTestIT extends IntegrationTest {
     }
 
     private void createPartner(String cnpj, String email, String name) {
-        final var partner = new Partner();
+        final var partner = new PartnerEntity();
         partner.setCnpj(cnpj);
         partner.setEmail(email);
         partner.setName(name);

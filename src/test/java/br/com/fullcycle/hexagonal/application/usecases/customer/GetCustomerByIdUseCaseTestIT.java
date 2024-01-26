@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.application.domain.customer.Customer;
-import br.com.fullcycle.hexagonal.infrastructure.repositories.CustomerRepository;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.CustomerJpaRepository;
 
 class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
 
@@ -20,7 +20,7 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
     private GetCustomerByIdUseCase useCase;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerJpaRepository customerRepository;
 
     @AfterEach
     void tearDown() {

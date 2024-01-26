@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.models.Customer;
-import br.com.fullcycle.hexagonal.infrastructure.models.Event;
-import br.com.fullcycle.hexagonal.infrastructure.models.Ticket;
-import br.com.fullcycle.hexagonal.infrastructure.models.TicketStatus;
-import br.com.fullcycle.hexagonal.infrastructure.repositories.CustomerRepository;
-import br.com.fullcycle.hexagonal.infrastructure.repositories.EventRepository;
-import br.com.fullcycle.hexagonal.infrastructure.repositories.TicketRepository;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.CustomerEntity;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.EventEntity;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.TicketEntity;
+import br.com.fullcycle.hexagonal.application.domain.event.ticket.TicketStatus;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.CustomerJpaRepository;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.EventJpaRepository;
+import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.TicketJpaRepository;
 import io.hypersistence.tsid.TSID;
 
 class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
@@ -27,13 +27,13 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
     private SubscribeCustomerToEventUseCase useCase;
     
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerJpaRepository customerRepository;
     
     @Autowired
-    private EventRepository eventRepository;
+    private EventJpaRepository eventRepository;
 
     @Autowired
-    private TicketRepository ticketRepository;
+    private TicketJpaRepository ticketRepository;
     
     @AfterEach
     void tearDown() {
@@ -121,8 +121,8 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         assertEquals(expectedError, actualException.getMessage());
     }
 
-    private void createTicket(Customer customer, Event event) {
-        final var ticket = new Ticket();
+    private void createTicket(CustomerEntity customer, EventEntity event) {
+        final var ticket = new TicketEntity();
         ticket.setCustomer(customer);
         ticket.setEvent(event);
         ticket.setStatus(TicketStatus.PENDING);
@@ -149,8 +149,8 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         assertEquals(expectedError, actualException.getMessage());
     }
 
-    private Customer createCustomer(String cpf, String email, String name) {
-        final var customer = new Customer();
+    private CustomerEntity createCustomer(String cpf, String email, String name) {
+        final var customer = new CustomerEntity();
         customer.setCpf(cpf);
         customer.setEmail(email);
         customer.setName(name);
@@ -158,8 +158,8 @@ class SubscribeCustomerToEventUseCaseTestIT extends IntegrationTest {
         return customerRepository.save(customer);
     }
 
-    private Event createEvent(String name, Integer totalSpots) {
-        final var event = new Event();
+    private EventEntity createEvent(String name, Integer totalSpots) {
+        final var event = new EventEntity();
         event.setName(name);
         event.setTotalSpots(totalSpots);
 
