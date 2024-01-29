@@ -37,7 +37,7 @@ public class PartnerControllerTest {
     @DisplayName("Deve criar um parceiro")
     public void testCreate() throws Exception {
 
-        var partner = new NewPartnerDTO("41536538000100", "john.doe@gmail.com", "John Doe");
+        var partner = new NewPartnerDTO("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
 
         final var result = this.mvc.perform(
                         MockMvcRequestBuilders.post("/partners")
@@ -46,7 +46,7 @@ public class PartnerControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("Location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
                 .andReturn().getResponse().getContentAsByteArray();
 
         var actualResponse = mapper.readValue(result, NewPartnerDTO.class);
@@ -59,7 +59,7 @@ public class PartnerControllerTest {
     @DisplayName("Não deve cadastrar um parceiro com CNPJ duplicado")
     public void testCreateWithDuplicatedCPFShouldFail() throws Exception {
 
-        var partner = new NewPartnerDTO("41536538000100", "john.doe@gmail.com", "John Doe");
+        var partner = new NewPartnerDTO("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
 
         // Cria o primeiro parceiro
         this.mvc.perform(
@@ -69,10 +69,10 @@ public class PartnerControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("Location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
                 .andReturn().getResponse().getContentAsByteArray();
 
-        var anotherPartner = new NewPartnerDTO("41536538000100", "john2@gmail.com", "John Doe");
+        var anotherPartner = new NewPartnerDTO("John Doe", "41.536.538/0001-00", "john2@gmail.com");
 
         // Tenta criar o segundo parceiro com o mesmo CPF
         this.mvc.perform(
@@ -88,7 +88,7 @@ public class PartnerControllerTest {
     @DisplayName("Não deve cadastrar um parceiro com e-mail duplicado")
     public void testCreateWithDuplicatedEmailShouldFail() throws Exception {
 
-        var partner = new NewPartnerDTO("41536538000100", "john.doe@gmail.com", "John Doe");
+        var partner = new NewPartnerDTO("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
 
         // Cria o primeiro parceiro
         this.mvc.perform(
@@ -98,10 +98,10 @@ public class PartnerControllerTest {
                 )
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.header().exists("Location"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
                 .andReturn().getResponse().getContentAsByteArray();
 
-        var anotherPartner = new NewPartnerDTO("66666538000100", "john.doe@gmail.com", "John Doe");
+        var anotherPartner = new NewPartnerDTO("John Doe", "66.666.538/0001-00", "john.doe@gmail.com");
 
         // Tenta criar o segundo parceiro com o mesmo CNPJ
         this.mvc.perform(
@@ -117,7 +117,7 @@ public class PartnerControllerTest {
     @DisplayName("Deve obter um parceiro por id")
     public void testGet() throws Exception {
 
-        var partner = new NewPartnerDTO("41536538000100", "john.doe@gmail.com", "John Doe");
+        var partner = new NewPartnerDTO("John Doe", "41.536.538/0001-00", "john.doe@gmail.com");
 
         final var createResult = this.mvc.perform(
                         MockMvcRequestBuilders.post("/partners")

@@ -46,7 +46,7 @@ class EventControllerTest {
 
     @BeforeEach
     void setUp() {
-        johnDoe = customerRepository.create(Customer.newCustomer("John Doe", "123.456.789.01", "john@gmail.com"));
+        johnDoe = customerRepository.create(Customer.newCustomer("John Doe", "123.456.789-01", "john@gmail.com"));
         disney = partnerRepository.create(Partner.newPartner("Disney", "12.345.678/0001-10", "disney@gmail.com"));
     }
 
@@ -61,7 +61,7 @@ class EventControllerTest {
     @DisplayName("Deve criar um evento")
     public void testCreate() throws Exception {
 
-        var event = new NewEventDTO("Disney on Ice", "2021-01-01",100, disney.partnerId().toString());
+        var event = new NewEventDTO("Disney on Ice", "2021-01-01",100, disney.partnerId().value());
 
         final var result = this.mvc.perform(
                         MockMvcRequestBuilders.post("/events")
@@ -69,7 +69,7 @@ class EventControllerTest {
                                 .content(mapper.writeValueAsString(event))
                 )
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
                 .andReturn().getResponse().getContentAsByteArray();
 
         var actualResponse = mapper.readValue(result, NewEventDTO.class);
@@ -83,7 +83,7 @@ class EventControllerTest {
     @DisplayName("Deve comprar um ticket de um evento")
     public void testReserveTicket() throws Exception {
 
-        var event = new NewEventDTO("Disney on Ice", "2021-01-01", 100, disney.partnerId().toString());
+        var event = new NewEventDTO("Disney on Ice", "2021-01-01", 100, disney.partnerId().value());
 
         final var createResult = this.mvc.perform(
                         MockMvcRequestBuilders.post("/events")
@@ -91,12 +91,12 @@ class EventControllerTest {
                                 .content(mapper.writeValueAsString(event))
                 )
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isString())
                 .andReturn().getResponse().getContentAsByteArray();
 
         var eventId = mapper.readValue(createResult, CreateEventUseCase.Output.class).id();
 
-        var sub = new SubscribeDTO(johnDoe.customerId().toString(), eventId);
+        var sub = new SubscribeDTO(johnDoe.customerId().value(), eventId);
 
         this.mvc.perform(
                         MockMvcRequestBuilders.post("/events/{id}/subscribe", eventId)
