@@ -23,24 +23,42 @@ public class Event {
     private PartnerId partnerId;
     private final Set<EventTicket> tickets;
 
-    public Event(final EventId eventId, final String name, final String date, final Integer totalSpots, final String partnerId) {
-        this(eventId);
+    public Event(
+            final EventId eventId,
+            final String name,
+            final String date,
+            final Integer totalSpots,
+            final PartnerId partnerId,
+            final Set<EventTicket> tickets
+    ) {
+        this(eventId, tickets);
         this.setName(name);
         this.setDate(date);
         this.setTotalSpots(totalSpots);
         this.setPartnerId(partnerId);
     }
 
-    private Event(final EventId eventId) {
+    private Event(final EventId eventId, final Set<EventTicket> tickets) {
         if (eventId == null) {
             throw new ValidationException("Invalid eventId for Event");
         }
         this.eventId = eventId;
-        this.tickets = new HashSet<>(0);
+        this.tickets = tickets != null ? tickets : new HashSet<>(0);
     }
 
     public static Event newEvent(final String name, final String date, final Integer totalSpots, final Partner partner) {
-        return new Event(EventId.unique(), name, date, totalSpots, partner.partnerId().value());
+        return new Event(EventId.unique(), name, date, totalSpots, partner.partnerId(),null);
+    }
+
+    public static Event restore(
+            String eventId,
+            String name,
+            String date,
+            int totalSpots,
+            String partnerId,
+            Set<EventTicket> tickets
+    ) {
+        return new Event(EventId.with(eventId), name, date, totalSpots, PartnerId.with(partnerId), tickets);
     }
 
     public EventId eventId() {
@@ -92,7 +110,7 @@ public class Event {
             throw new ValidationException("Event sold out");
         }
 
-        final var ticket = Ticket.newTicket(customerId.value(), this.eventId().value());
+        final var ticket = Ticket.newTicket(customerId, this.eventId());
 
         this.tickets.add(new EventTicket(ticket.ticketId(), this.eventId(), customerId, allTickets().size() + 1));
 
@@ -121,7 +139,7 @@ public class Event {
         this.totalSpots = totalSpots;
     }
 
-    private void setPartnerId(final String partnerId) {
-        this.partnerId = new PartnerId(partnerId);
+    private void setPartnerId(final PartnerId partnerId) {
+        this.partnerId = partnerId;
     }
 }

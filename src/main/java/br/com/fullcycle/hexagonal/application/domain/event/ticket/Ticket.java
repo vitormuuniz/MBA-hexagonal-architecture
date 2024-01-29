@@ -18,8 +18,8 @@ public class Ticket {
 
     public Ticket(
             final TicketId ticketId,
-            final String customerId,
-            final String eventId,
+            final CustomerId customerId,
+            final EventId eventId,
             final TicketStatus status,
             final Instant paidAt,
             final Instant reservedAt
@@ -32,7 +32,7 @@ public class Ticket {
         this.setReservedAt(reservedAt);
     }
 
-    public static Ticket newTicket(final String customerId, final String eventId) {
+    public static Ticket newTicket(final CustomerId customerId, final EventId eventId) {
         return new Ticket(TicketId.unique(), customerId, eventId, TicketStatus.PENDING, null, Instant.now());
     }
 
@@ -73,12 +73,12 @@ public class Ticket {
         return Objects.hash(ticketId);
     }
 
-    private void setCustomerId(final String customerId) {
-        this.customerId = new CustomerId(customerId);
+    private void setCustomerId(final CustomerId customerId) {
+        this.customerId = customerId;
     }
 
-    private void setEventId(final String eventId) {
-        this.eventId = new EventId(eventId);
+    private void setEventId(final EventId eventId) {
+        this.eventId = eventId;
     }
 
     private void setStatus(final TicketStatus status) {

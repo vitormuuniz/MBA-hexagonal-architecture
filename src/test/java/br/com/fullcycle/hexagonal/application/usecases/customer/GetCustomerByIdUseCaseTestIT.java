@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
 import br.com.fullcycle.hexagonal.application.domain.customer.Customer;
-import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.CustomerJpaRepository;
+import br.com.fullcycle.hexagonal.application.repositories.CustomerRepository;
 
 class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
 
@@ -20,9 +20,9 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
     private GetCustomerByIdUseCase useCase;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerRepository customerRepository;
 
-    @AfterEach
+    @BeforeEach
     void tearDown() {
         customerRepository.deleteAll();
     }
@@ -31,19 +31,20 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
     @DisplayName("Deve obter um cliente por id")
     public void testGetById() {
         //given
-        final var expectedCPF = "12345678901";
+        final var expectedCPF = "123.456.789-01";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
-        final var aCustomer = Customer.newCustomer(expectedName, expectedCPF, expectedEmail);
+        final var aCustomer = createCustomer(expectedCPF, expectedEmail, expectedName);
+        final var expectedCustomerId = aCustomer.customerId().value();
 
-        final var input = new GetCustomerByIdUseCase.Input(aCustomer.customerId().toString());
+        final var input = new GetCustomerByIdUseCase.Input(expectedCustomerId);
 
         //when
         final var output = useCase.execute(input).get();
 
         //then
-        assertEquals(aCustomer.customerId().toString(), output.id());
+        assertEquals(expectedCustomerId, output.id());
         assertEquals(expectedCPF, output.cpf());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
@@ -62,5 +63,9 @@ class GetCustomerByIdUseCaseTestIT extends IntegrationTest {
 
         //then
         assertTrue(output.isEmpty());
+    }
+
+    private Customer createCustomer(String cpf, String email, String name) {
+        return customerRepository.create(Customer.newCustomer(name, cpf, email));
     }
 }

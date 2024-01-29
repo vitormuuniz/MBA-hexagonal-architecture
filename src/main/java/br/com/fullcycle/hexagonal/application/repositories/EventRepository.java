@@ -10,4 +10,5 @@ public interface EventRepository {
     Optional<Event> eventOfId(EventId event);
     Event create(Event event);
     Event update(Event event);
+    void deleteAll();
 }

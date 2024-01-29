@@ -4,15 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
+import br.com.fullcycle.hexagonal.application.domain.customer.Customer;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
-import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.CustomerEntity;
-import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.CustomerJpaRepository;
+import br.com.fullcycle.hexagonal.application.repositories.CustomerRepository;
 
 public class CreateCustomerUseCaseTestIT extends IntegrationTest {
 
@@ -20,9 +20,9 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     private CreateCustomerUseCase useCase;
 
     @Autowired
-    private CustomerJpaRepository customerRepository;
+    private CustomerRepository customerRepository;
 
-    @AfterEach
+    @BeforeEach
     void tearDown() {
         customerRepository.deleteAll();
     }
@@ -31,7 +31,7 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     @DisplayName("Deve criar um cliente")
     public void testCreateCustomer() {
         //given
-        final var expectedCPF = "12345678901";
+        final var expectedCPF = "123.456.789-01";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
@@ -51,7 +51,7 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     @DisplayName("Não deve cadastrar um cliente com CPF duplicado")
     public void testCreateWithDuplicatedCPFShouldFail() {
         //given
-        final var expectedCPF = "12345678901";
+        final var expectedCPF = "123.456.789-01";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Customer already exists";
@@ -71,12 +71,12 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     @DisplayName("Não deve cadastrar um cliente com Email duplicado")
     public void testCreateWithDuplicatedEmailShouldFail() {
         //given
-        final var expectedCPF = "12345678901";
+        final var expectedCPF = "123.456.789-01";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
         final var expectedErrorMessage = "Customer already exists";
 
-        createCustomer("11122233344", expectedEmail, expectedName);
+        createCustomer("111.222.333-44", expectedEmail, expectedName);
 
         var createInput = new CreateCustomerUseCase.Input(expectedCPF, expectedEmail, expectedName);
 
@@ -88,11 +88,6 @@ public class CreateCustomerUseCaseTestIT extends IntegrationTest {
     }
 
     private void createCustomer(String cpf, String email, String name) {
-        final var aCustomer = new CustomerEntity();
-        aCustomer.setCpf(cpf);
-        aCustomer.setEmail(email);
-        aCustomer.setName(name);
-
-        customerRepository.save(aCustomer);
+        customerRepository.create(Customer.newCustomer(name, cpf, email));
     }
 }

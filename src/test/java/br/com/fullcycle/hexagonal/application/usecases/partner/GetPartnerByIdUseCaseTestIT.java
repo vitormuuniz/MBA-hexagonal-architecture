@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.fullcycle.hexagonal.IntegrationTest;
-import br.com.fullcycle.hexagonal.infrastructure.jpa.entities.PartnerEntity;
-import br.com.fullcycle.hexagonal.infrastructure.jpa.repositories.PartnerJpaRepository;
+import br.com.fullcycle.hexagonal.application.domain.partner.Partner;
+import br.com.fullcycle.hexagonal.application.repositories.PartnerRepository;
 
 class GetPartnerByIdUseCaseTestIT extends IntegrationTest {
 
@@ -20,9 +20,9 @@ class GetPartnerByIdUseCaseTestIT extends IntegrationTest {
     private GetPartnerByIdUseCase useCase;
 
     @Autowired
-    private PartnerJpaRepository partnerRepository;
+    private PartnerRepository partnerRepository;
 
-    @AfterEach
+    @BeforeEach
     void tearDown() {
         partnerRepository.deleteAll();
     }
@@ -31,19 +31,20 @@ class GetPartnerByIdUseCaseTestIT extends IntegrationTest {
     @DisplayName("Deve obter um partner por id")
     public void testGetById() {
         //given
-        final var expectedCNPJ = "41536538000100";
+        final var expectedCNPJ = "41.536.538/0001-00";
         final var expectedEmail = "john.doe@gmail.com";
         final var expectedName = "John Doe";
 
         final var aPartner = createPartner(expectedCNPJ, expectedEmail, expectedName);
+        final var expectedPartnerId = aPartner.partnerId().value();
 
-        final var input = new GetPartnerByIdUseCase.Input(aPartner.getId().toString());
+        final var input = new GetPartnerByIdUseCase.Input(expectedPartnerId);
 
         //when
         final var output = useCase.execute(input).get();
 
         //then
-        assertEquals(aPartner.getId().toString(), output.id());
+        assertEquals(expectedPartnerId, output.id());
         assertEquals(expectedCNPJ, output.cnpj());
         assertEquals(expectedEmail, output.email());
         assertEquals(expectedName, output.name());
@@ -64,12 +65,7 @@ class GetPartnerByIdUseCaseTestIT extends IntegrationTest {
         assertTrue(output.isEmpty());
     }
 
-    private PartnerEntity createPartner(String cnpj, String email, String name) {
-        final var partner = new PartnerEntity();
-        partner.setCnpj(cnpj);
-        partner.setEmail(email);
-        partner.setName(name);
-
-        return partnerRepository.save(partner);
+    private Partner createPartner(String cnpj, String email, String name) {
+        return partnerRepository.create(Partner.newPartner(name, cnpj, email));
     }
 }

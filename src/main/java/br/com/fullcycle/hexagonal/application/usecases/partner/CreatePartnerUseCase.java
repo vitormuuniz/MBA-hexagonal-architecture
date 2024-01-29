@@ -2,6 +2,8 @@ package br.com.fullcycle.hexagonal.application.usecases.partner;
 
 import java.util.Objects;
 
+import br.com.fullcycle.hexagonal.application.domain.person.Cnpj;
+import br.com.fullcycle.hexagonal.application.domain.person.Email;
 import br.com.fullcycle.hexagonal.application.usecases.UseCase;
 import br.com.fullcycle.hexagonal.application.domain.partner.Partner;
 import br.com.fullcycle.hexagonal.application.exceptions.ValidationException;
@@ -18,10 +20,10 @@ public class CreatePartnerUseCase extends UseCase<CreatePartnerUseCase.Input, Cr
 
     @Override
     public Output execute(Input input) {
-        if (partnerRepository.partnerOfCNPJ(input.cnpj).isPresent()) {
+        if (partnerRepository.partnerOfCNPJ(new Cnpj(input.cnpj)).isPresent()) {
             throw new ValidationException("Partner already exists");
         }
-        if (partnerRepository.partnerOfEmail(input.email).isPresent()) {
+        if (partnerRepository.partnerOfEmail(new Email(input.email)).isPresent()) {
             throw new ValidationException("Partner already exists");
         }
 

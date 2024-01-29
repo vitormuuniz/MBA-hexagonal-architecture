@@ -26,7 +26,7 @@ public class TicketTest {
         final var expectedCustomerId = aCustomer.customerId();
 
         //when
-        final var actualTicket = Ticket.newTicket(aCustomer.customerId().value(), anEvent.eventId().value());
+        final var actualTicket = Ticket.newTicket(aCustomer.customerId(), anEvent.eventId());
 
         //then
         assertNotNull(actualTicket.ticketId());
