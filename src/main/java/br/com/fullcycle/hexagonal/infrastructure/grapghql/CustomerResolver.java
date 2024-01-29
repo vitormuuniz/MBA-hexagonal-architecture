@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 
 import br.com.fullcycle.hexagonal.application.usecases.customer.CreateCustomerUseCase;
 import br.com.fullcycle.hexagonal.application.usecases.customer.GetCustomerByIdUseCase;
-import br.com.fullcycle.hexagonal.infrastructure.dtos.NewPartnerDTO;
+import br.com.fullcycle.hexagonal.infrastructure.dtos.NewCustomerDTO;
 
 //Adapter
 @Controller
@@ -24,8 +24,8 @@ public class CustomerResolver {
     }
 
     @MutationMapping
-    public CreateCustomerUseCase.Output createCustomer(@Argument NewPartnerDTO input) {
-        return createCustomerUseCase.execute(new CreateCustomerUseCase.Input(input.cnpj(), input.email(), input.name()));
+    public CreateCustomerUseCase.Output createCustomer(@Argument NewCustomerDTO input) {
+        return createCustomerUseCase.execute(new CreateCustomerUseCase.Input(input.cpf(), input.email(), input.name()));
     }
 
     @QueryMapping
